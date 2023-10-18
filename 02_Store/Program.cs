@@ -47,12 +47,12 @@ namespace _02_Store
             Console.WriteLine(cart.Order().Paylink);
         }
 
-        private static void Buy(Cart cart, Good good, uint number)
+        private static void Buy(Cart cart, Good good, uint amount)
         {
             Console.WriteLine("Добавление товара в корзину: ");
-            Console.WriteLine("{0, -16} {1, -5}", good.Name, number);
+            Console.WriteLine("{0, -16} {1, -5}", good.Name, amount);
 
-            var message = cart.TryAdd(good, number) ?
+            var message = cart.TryAdd(good, amount) ?
                 SuccessBuyMessage : 
                 ErrorBuyMessage;
 
@@ -103,25 +103,20 @@ namespace _02_Store
             _goods = new Dictionary<Good, uint>();
         }
 
-        public IReadOnlyDictionary<Good, uint> GoodsInfo => _goods;
-
         public Warehouse(Dictionary<Good, uint> goods)
-        {
-            if (goods == null)
-            {
-                throw new ArgumentNullException(nameof(goods));
-            }
-
-            _goods = goods;
+        {   
+            _goods = goods ?? throw new ArgumentNullException(nameof(goods)); ;
         }
+
+        public IReadOnlyDictionary<Good, uint> GoodsInfo => _goods;
 
         /// <summary>
         /// Доставить на склад.
         /// </summary>
         /// <param name="good">товар</param>
-        /// <param name="number">количество</param>
+        /// <param name="amount">количество</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public void Delive(Good good, uint number)
+        public void Delive(Good good, uint amount)
         {
             if (good == null)
             {
@@ -130,12 +125,12 @@ namespace _02_Store
 
             if (!ContainsRecord(good))
             {
-                _goods.Add(good, number);
+                _goods.Add(good, amount);
             }
             else
             {
                 var rest = _goods[good];
-                _goods[good] = rest + number;
+                _goods[good] = rest + amount;
             }
         }
 
@@ -143,24 +138,24 @@ namespace _02_Store
         /// Попытаться забрать со склада.
         /// </summary>
         /// <param name="good">товар</param>
-        /// <param name="number">количество</param>
+        /// <param name="amount">количество</param>
         /// <returns>Получилось или нет.</returns>
-        public bool TryTake(Good good, uint number)
+        public bool TryTake(Good good, uint amount)
         {
-            if (!CanTake(good, number))
+            if (!CanTake(good, amount))
             {
                 return false;
             }
 
             var rest = _goods[good];
-            _goods[good] = rest - number;
+            _goods[good] = rest - amount;
 
             return true;
         }
 
-        private bool CanTake(Good good, uint number)
+        private bool CanTake(Good good, uint amount)
         {
-            return ContainsRecord(good) && _goods[good] >= number;
+            return ContainsRecord(good) && _goods[good] >= amount;
         }
 
         private bool ContainsRecord(Good good)
@@ -169,7 +164,12 @@ namespace _02_Store
         }
     }
 
-    public class Shop
+    public interface IGoodsProvider
+    {
+        bool TryTake(Good good, uint amount);
+    }
+
+    public class Shop : IGoodsProvider
     {
         private readonly Warehouse _warehouse;
 
@@ -188,40 +188,38 @@ namespace _02_Store
             return new Cart(this);
         }
 
-        public bool TrySell(Good good, uint number)
+        public bool TryTake(Good good, uint amount)
         {
-            return _warehouse.TryTake(good, number);
+            return _warehouse.TryTake(good, amount);
         }
     }
 
     public class Cart
     {
-        private readonly Shop _shop;
+        private readonly IGoodsProvider _provider;
         private readonly Dictionary<Good, uint> _goods = new Dictionary<Good, uint>();
-        private readonly Order _order;
-
-        public Cart(Shop shop)
+        
+        public Cart(IGoodsProvider provider)
         {
-            _shop = shop;
-            _order = new Order();
+            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
 
         public IReadOnlyDictionary<Good, uint> GoodsInfo => _goods;
 
-        public bool TryAdd(Good good, uint number)
+        public bool TryAdd(Good good, uint amount)
         {
-            if (!_shop.TrySell(good, number))
+            if (!_provider.TryTake(good, amount))
             {
                 return false;
             }
 
-            if (_goods.TryGetValue(good, out uint selectedNumber))
+            if (_goods.TryGetValue(good, out uint currentAmount))
             {
-                _goods[good] = selectedNumber + number;
+                _goods[good] = currentAmount + amount;
             }
             else
             {
-                _goods.Add(good, number);
+                _goods.Add(good, amount);
             }
 
             return true;
@@ -229,7 +227,7 @@ namespace _02_Store
 
         public Order Order()
         {
-            return _order;
+            return new Order();
         }
     }
 
