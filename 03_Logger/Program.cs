@@ -18,6 +18,8 @@ namespace _03_Logger
             {
                 var consoleLogger = new ConsoleLogger();
                 var fileLogger = new FileLogger();
+                var fridayConsoleLogger = DayOfWeekLogger.CreateFridayLogger(consoleLogger);
+                var fridayFileLogger = DayOfWeekLogger.CreateFridayLogger(fileLogger);
 
                 var finders = new List<Pathfinder>
                 {
@@ -28,13 +30,13 @@ namespace _03_Logger
                     new Pathfinder(consoleLogger),
 
                     //3) Пишет лог в файл по пятницам. 
-                    new Pathfinder(new FridayLogger(fileLogger)),
+                    new Pathfinder(fridayFileLogger),
 
                     //4) Пишет лог в консоль по пятницам. 
-                    new Pathfinder(new FridayLogger(consoleLogger)),
+                    new Pathfinder(fridayConsoleLogger),
 
                     //5) Пишет лог в консоль а по пятницам ещё и в файл.
-                    new Pathfinder(new ConsoleLogger(new FridayLogger(fileLogger)))
+                    new Pathfinder(new CompositeLogger(consoleLogger, fridayFileLogger))
                 };
 
                 finders.ForEach(finder => finder.Find());
@@ -71,49 +73,61 @@ namespace _03_Logger
 
         class ConsoleLogger: ILogger
         {
-            private readonly ILogger _logger;
-
-            public ConsoleLogger(ILogger logger = null)
-            {
-                _logger = logger;
-            }
-
             public void Log(string message)
             {
                 Console.WriteLine(message);
-                _logger?.Log(message);
             }
         }
 
         class FileLogger : ILogger
         {
             private const string LogPath = "log.txt";
-            private readonly ILogger _logger;
-
-            public FileLogger(ILogger logger = null)
-            {
-                _logger = logger;
-            }
 
             public void Log(string message)
             {
                 File.AppendAllText(LogPath, message + Environment.NewLine);
-                _logger?.Log(message);
             }
         }
 
-        class FridayLogger : ILogger
+        class CompositeLogger : ILogger
         {
-            private readonly ILogger _logger;
+            private readonly IEnumerable<ILogger> _loggers;
 
-            public FridayLogger(ILogger logger = null)
+            public CompositeLogger(params ILogger[] loggers)
             {
-                _logger = logger;
+                _loggers = new List<ILogger>(
+                    loggers ?? 
+                    throw new ArgumentNullException(nameof(loggers)));
             }
 
             public void Log(string message)
             {
-                if (DateTime.Now.DayOfWeek == DayOfWeek.Friday)
+                foreach(var logger in _loggers)
+                {
+                    logger.Log(message);
+                }
+            }
+        }
+
+        class DayOfWeekLogger : ILogger
+        {
+            private readonly ILogger _logger;
+            private readonly DayOfWeek _dayOfWeek;
+
+            private DayOfWeekLogger(ILogger logger, DayOfWeek dayOfWeek)
+            {
+                _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+                _dayOfWeek = dayOfWeek;
+            }
+
+            public static DayOfWeekLogger CreateFridayLogger(ILogger logger)
+            {
+                return new DayOfWeekLogger(logger, DayOfWeek.Friday);
+            }
+
+            public void Log(string message)
+            {
+                if (DateTime.Now.DayOfWeek == _dayOfWeek)
                 {
                     _logger?.Log(message);
                 }
