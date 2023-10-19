@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 
 namespace _04_PaymentSystems
 {
@@ -11,6 +10,8 @@ namespace _04_PaymentSystems
     {
         static void Main(string[] args)
         {
+            var test = new Test();
+            test.Run();
         }
     }
 
@@ -19,13 +20,65 @@ namespace _04_PaymentSystems
         public void Run()
         {
             var orderFactory = new OrderFactory();
-            var orders = orderFactory.CreateOrders(2);
+            var paymentFactory = new PaymentSystemFactory();
+            var orders = orderFactory.CreateOrders(5);
+            var payments = paymentFactory.CreateAll();
 
+            var ordersInfo = GetOrdersInfo(orders, payments);
+            PrintOrdersInfo(ordersInfo);
         }
 
-        
+        private static Dictionary<Order, List<string>> GetOrdersInfo(List<Order> orders, List<IPaymentSystem> payments)
+        {
+            var ordersInfo = new Dictionary<Order, List<string>>();
+
+            foreach (var order in orders)
+            {
+                var links = new List<string>();
+
+                foreach (var payment in payments)
+                {
+                    links.Add(payment.GetPayingLink(order));
+                }
+
+                ordersInfo.Add(order, links);
+            }
+
+            return ordersInfo;
+        }
+
+        private static void PrintOrdersInfo(Dictionary<Order, List<string>> ordersInfo)
+        {
+            foreach (var info in ordersInfo)
+            {
+                PrintOrderInfo(info.Key, info.Value);
+            }
+        }
+
+        private static void PrintOrderInfo(Order order, List<string> paymentLinks)
+        {
+            const string format = "{0, -12} {1, -12}";
+            int linkCounter = 1;
+
+            Console.WriteLine("Заказ:");
+            Console.WriteLine(format, nameof(order.Id), nameof(order.Amount));
+            Console.WriteLine(format + Environment.NewLine, order.Id, order.Amount);
+
+            Console.WriteLine("Ссылки для оплаты:");
+
+            paymentLinks.ForEach(link =>
+            {
+                var line = $"{linkCounter,3})    {link}" + Environment.NewLine;
+                Console.WriteLine(line);
+                linkCounter++;
+            });
+
+            Console.WriteLine("----" + Environment.NewLine);
+        }
     }
 
+    #region Factories
+    
     public class OrderFactory
     {
         private const int MinAmount = 1;
@@ -58,9 +111,31 @@ namespace _04_PaymentSystems
 
         private static int GetRandomAmount()
         {
-            return _random.Next(MinAmount, MaxAmount+1);
+            return _random.Next(MinAmount, MaxAmount + 1);
         }
     }
+
+    public class PaymentSystemFactory
+    {
+        private static readonly Random _random = new Random();
+
+        public List<IPaymentSystem> CreateAll()
+        {
+            return new List<IPaymentSystem>
+            {
+                new FirstPaymentSystem(),
+                new SecondPaymentSystem(),
+                new ThirdPaymentSystem(CreateSecretKey())
+            };
+        }
+
+        private static int CreateSecretKey()
+        {
+            return _random.Next();
+        }
+    }
+
+    #endregion Factories
 
     public class Order
     {
@@ -74,74 +149,145 @@ namespace _04_PaymentSystems
         }
     }
 
+    #region HashCalculator
+
+    public interface IHashCalculator
+    {
+        string CalculateHash(byte[] bytes);
+    }
+
+    public sealed class HashCalculator : IHashCalculator
+    {
+        private readonly HashAlgorithm _hashAlgorithm;
+
+        private HashCalculator(HashAlgorithm hashAlgorithm)
+        {
+            _hashAlgorithm = hashAlgorithm ?? throw new ArgumentNullException(nameof(hashAlgorithm));
+        }
+
+        public static HashCalculator CreateMd5Calculator() => new HashCalculator(MD5.Create());
+
+        public static HashCalculator CreateSha1Calculator() => new HashCalculator(SHA1.Create());
+
+        public string CalculateHash(byte[] bytes)
+        {
+            var hash = _hashAlgorithm.ComputeHash(bytes);
+
+            return Base64UrlEncoder.Encode(hash);
+        }
+    }
+
+    #endregion HashCalculator
+
+    #region PaymentSystem
+    
     public interface IPaymentSystem
     {
         string GetPayingLink(Order order);
     }
 
-    public interface IHashCalculator
+    public abstract class BasePaymentSystem : IPaymentSystem
     {
-        string CalculateHash(Order order);
-    }
+        private readonly IHashCalculator _hashCalculator;
 
-    public abstract class BaseHashCalculator : IHashCalculator
-    {
-        public abstract string CalculateHash(Order order);
-
-        protected byte[] TranslateInteger(int integer)
+        protected BasePaymentSystem(IHashCalculator hashCalculator)
         {
-            const int mask = 0xFF;
-            const int bytesInInteger = 32 / 8;
-            var result = new byte[bytesInInteger];
-
-            //BitConverter.
-
-            for (int i = 0; i < bytesInInteger; i++)
-            {
-
-            }
-
-            return result;
+            _hashCalculator = hashCalculator;
         }
-    }
 
-    //pay.system1.ru/order?amount=12000RUB&hash={MD5 хеш ID заказа}
-    public class FirstPaymentSystem : IPaymentSystem
-    {
         public string GetPayingLink(Order order)
         {
-            var amount = order.Amount;
-            var hash = CalculateHash(order.Id);//{MD5 хеш ID заказа}
+            var hashSource = PrepareHashSource(order);
+            var hash = _hashCalculator.CalculateHash(hashSource);
 
-            return $"pay.system1.ru/order?amount={amount}&hash={hash}";
+            return BuildLink(order, hash);
         }
 
-        private string CalculateHash(int orderId)
+        protected abstract byte[] PrepareHashSource(Order order);
+
+        protected abstract string BuildLink(Order order, string hash);
+
+        protected static byte[] GetBytes(int value)
         {
-            MD5CryptoServiceProvider mD5CryptoServiceProvider = new MD5CryptoServiceProvider();
-
-            //mD5CryptoServiceProvider.
-
-            return null;
+            return BitConverter.GetBytes(value);
         }
     }
 
-
-    //order.system2.ru/pay?hash={MD5 хеш ID заказа + сумма заказа}
-    public class SecondPaymentSystem : IPaymentSystem
+    /// <summary>
+    /// Link:<br/>
+    /// pay.system1.ru/order?amount={order.Amount}RUB&amp;hash={MD5 хеш ID заказа}
+    /// </summary>
+    public class FirstPaymentSystem : BasePaymentSystem
     {
-        public string GetPayingLink(Order order)
+        public FirstPaymentSystem() :
+            base(HashCalculator.CreateMd5Calculator())
         {
-            throw new NotImplementedException();
+        }
+
+        protected override string BuildLink(Order order, string hash)
+        {
+            return $"pay.system1.ru/order?amount={order.Amount}&hash={hash}";
+        }
+
+        protected override byte[] PrepareHashSource(Order order)
+        {
+            return GetBytes(order.Id);
         }
     }
 
-    //system3.com/pay?amount=12000&curency=RUB&hash={SHA-1 хеш сумма заказа + ID заказа + секретный ключ от системы}
-    public class ThirdPaymentSystem : IPaymentSystem
+
+    /// <summary>
+    /// Link:<br/>
+    /// order.system2.ru/pay?hash={MD5 хеш ID заказа + сумма заказа}
+    /// </summary>
+    public class SecondPaymentSystem : BasePaymentSystem
     {
-        public string GetPayingLink(Order order)
+        public SecondPaymentSystem() :
+            base(HashCalculator.CreateMd5Calculator())
         {
-            throw new NotImplementedException();
+        }
+
+        protected override string BuildLink(Order order, string hash)
+        {
+            return $"order.system2.ru/pay?hash={hash}";
+        }
+
+        protected override byte[] PrepareHashSource(Order order)
+        {
+            return GetBytes(order.Id)
+                .Concat(GetBytes(order.Amount))
+                .ToArray();
         }
     }
+
+    /// <summary>
+    /// Link:<br/>
+    /// system3.com/pay?amount={order.Amount}&amp;curency=RUB&amp;hash={SHA-1 хеш сумма заказа + ID заказа + секретный ключ от системы}
+    /// </summary>
+    public class ThirdPaymentSystem : BasePaymentSystem
+    {
+        private readonly int _secretKey;
+
+        /// <param name="secretKey">секретный ключ от системы</param>
+        public ThirdPaymentSystem(int secretKey) :
+            base(HashCalculator.CreateSha1Calculator())
+        {
+            _secretKey = secretKey;
+        }
+
+        protected override string BuildLink(Order order, string hash)
+        {
+            return $"system3.com/pay?amount={order.Amount}&curency=RUB&hash={hash}";
+        }
+
+        protected override byte[] PrepareHashSource(Order order)
+        {
+            return GetBytes(order.Amount)
+                .Concat(GetBytes(order.Id))
+                .Concat(GetBytes(_secretKey))
+                .ToArray();
+        }
+    }
+
+    #endregion PaymentSystem
 }
