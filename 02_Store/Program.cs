@@ -94,13 +94,12 @@ namespace _02_Store
         public string Name { get; }
     }
 
-    public class Warehouse
+    public class Warehouse : IGoodsProvider
     {
         private readonly Dictionary<Good, uint> _goods;
 
-        public Warehouse()
+        public Warehouse() : this(new Dictionary<Good, uint>())
         {
-            _goods = new Dictionary<Good, uint>();
         }
 
         public Warehouse(Dictionary<Good, uint> goods)
@@ -129,31 +128,21 @@ namespace _02_Store
             }
             else
             {
-                var rest = _goods[good];
-                _goods[good] = rest + amount;
+                _goods[good] += amount;
             }
         }
 
-        /// <summary>
-        /// Попытаться забрать со склада.
-        /// </summary>
-        /// <param name="good">товар</param>
-        /// <param name="amount">количество</param>
-        /// <returns>Получилось или нет.</returns>
-        public bool TryTake(Good good, uint amount)
+        public void Take(Good good, uint amount)
         {
-            if (!CanTake(good, amount))
+            if (!ContainsRecord(good))
             {
-                return false;
+                throw new InvalidOperationException("Такого товара нет на складе.");
             }
 
-            var rest = _goods[good];
-            _goods[good] = rest - amount;
-
-            return true;
+            _goods[good] -= amount;
         }
-
-        private bool CanTake(Good good, uint amount)
+        
+        public bool CanTake(Good good, uint amount)
         {
             return ContainsRecord(good) && _goods[good] >= amount;
         }
@@ -166,31 +155,23 @@ namespace _02_Store
 
     public interface IGoodsProvider
     {
-        bool TryTake(Good good, uint amount);
+        void Take(Good good, uint amount);
+
+        bool CanTake(Good good, uint amount);
     }
 
-    public class Shop : IGoodsProvider
+    public class Shop 
     {
         private readonly Warehouse _warehouse;
 
         public Shop(Warehouse warehouse)
-        {
-            if (warehouse == null)
-            {
-                throw new ArgumentNullException(nameof(warehouse));
-            }
-
-            _warehouse = warehouse;
+        {   
+            _warehouse = warehouse ?? throw new ArgumentNullException(nameof(warehouse)); ;
         }
 
         public Cart Cart()
         {
-            return new Cart(this);
-        }
-
-        public bool TryTake(Good good, uint amount)
-        {
-            return _warehouse.TryTake(good, amount);
+            return new Cart(_warehouse);
         }
     }
 
@@ -208,7 +189,7 @@ namespace _02_Store
 
         public bool TryAdd(Good good, uint amount)
         {
-            if (!_provider.TryTake(good, amount))
+            if (!_provider.CanTake(good, amount))
             {
                 return false;
             }
@@ -227,6 +208,11 @@ namespace _02_Store
 
         public Order Order()
         {
+            foreach (var pair in _goods)
+            {
+                _provider.Take(pair.Key, pair.Value);
+            }
+
             return new Order();
         }
     }
