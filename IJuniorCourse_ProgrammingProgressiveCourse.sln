@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "04_PaymentSystems", "04_Pay
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "20_Task", "20_Task\20_Task.csproj", "{247C0914-754A-4D4B-899B-C8A49B1B1A4E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "27_Task", "27_Task\27_Task.csproj", "{6D5C9A94-C843-474A-BAF5-BCDA09B93C85}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{247C0914-754A-4D4B-899B-C8A49B1B1A4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{247C0914-754A-4D4B-899B-C8A49B1B1A4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{247C0914-754A-4D4B-899B-C8A49B1B1A4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D5C9A94-C843-474A-BAF5-BCDA09B93C85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D5C9A94-C843-474A-BAF5-BCDA09B93C85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D5C9A94-C843-474A-BAF5-BCDA09B93C85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D5C9A94-C843-474A-BAF5-BCDA09B93C85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
