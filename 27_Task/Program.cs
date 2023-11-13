@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using _27_Task.Common;
+using _27_Task.DataAccess;
 
 namespace _27_Task
 {
@@ -14,6 +13,11 @@ namespace _27_Task
         [STAThread]
         static void Main()
         {
+            DbManager dbManager = new DbManager(new DummyLogger());
+            dbManager.CreateDatabase();
+            dbManager.FillData();
+
+            return;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

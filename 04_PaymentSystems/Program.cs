@@ -169,6 +169,8 @@ namespace _04_PaymentSystems
 
         public static HashCalculator CreateSha1Calculator() => new HashCalculator(SHA1.Create());
 
+        public static HashCalculator CreateSha256Calculator() => new HashCalculator(SHA256.Create());
+
         public string CalculateHash(byte[] bytes)
         {
             var hash = _hashAlgorithm.ComputeHash(bytes);

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
+using _27_Task.DataAccess;
 
 namespace _27_Task
 {
@@ -49,28 +49,5 @@ namespace _27_Task
         {
             return string.IsNullOrEmpty(value) == false || value.Length >= DigitsInPassport;
         }
-    }
-
-    public class VotersInfoProvider
-    {
-        public List<VoterInfo> FindInfo(string passport)
-        {
-            var infos = new List<VoterInfo>();
-
-            return infos;
-        }
-    }
-
-    public class VoterInfo
-    {
-        public VoterInfo(string passport, bool canVote)
-        {
-            Passport = passport;
-            CanVote = canVote;
-        }
-
-        public string Passport { get; }
-
-        public bool CanVote { get; }
     }
 }
