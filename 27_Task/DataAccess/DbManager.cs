@@ -96,18 +96,17 @@ namespace _27_Task.DataAccess
                     var insert = $"INSERT INTO {VotersTable.TableName} ({Columns.Name}, {Columns.PassportHash}, {Columns.CanVote}) " +
                         $"VALUES ({name}, {passport}, {vote})";
 
+                    var command = CreateCommand(connection);
                     var records = _votersInfoGenerator.Generate();
 
                     foreach (var record in records)
                     {
-                        using (var command = CreateCommand(connection))
-                        {
-                            command.CommandText = insert;
-                            command.Parameters.Add(new SQLiteParameter(name, record.Name));
-                            command.Parameters.Add(new SQLiteParameter(passport, record.Passport));
-                            command.Parameters.Add(new SQLiteParameter(vote, record.CanVote));
-                            command.ExecuteNonQuery();
-                        }
+                        command.CommandText = insert;
+                        command.Parameters.Clear();
+                        command.Parameters.Add(new SQLiteParameter(name, record.Name));
+                        command.Parameters.Add(new SQLiteParameter(passport, record.Passport));
+                        command.Parameters.Add(new SQLiteParameter(vote, record.CanVote));
+                        command.ExecuteNonQuery();
                     }
                 }
             }
