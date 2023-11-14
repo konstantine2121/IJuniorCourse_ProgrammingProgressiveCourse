@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using _27_Task.DataAccess;
 using _27_Task.Presenter;
 
 namespace _27_Task
@@ -18,8 +17,8 @@ namespace _27_Task
         #endregion Fields
 
         #region Ctor
-        
-        public CheckPassportForm(VotersInfoProvider votersInfoProvider)
+
+        public CheckPassportForm()
         {
             InitializeComponent();
 
@@ -34,10 +33,10 @@ namespace _27_Task
 
         public string PassportNumber => passportTextBox.Text;
 
-        public string VoterCheckResult 
-        { 
-            get => resultTextBox.Text; 
-            set => resultTextBox.Text = value; 
+        public string VoterCheckResult
+        {
+            get => resultTextBox.Text;
+            set => resultTextBox.Text = value;
         }
 
         public void RegisterPresenter(PassportCheckerPresenter presenter)
@@ -58,7 +57,7 @@ namespace _27_Task
         }
 
         #region Event Handlers
-        
+
         private void OnCheckClick(object sender, EventArgs e)
         {
             _presenter?.Check();

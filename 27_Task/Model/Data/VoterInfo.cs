@@ -1,8 +1,8 @@
-﻿namespace _27_Task.Model.Dtos
+﻿namespace _27_Task.Model.Data
 {
-    public class VoterInfoDto
+    public class VoterInfo
     {
-        public VoterInfoDto(string passport, string name, bool canVote)
+        public VoterInfo(string passport, string name, bool canVote)
         {
             Passport = passport;
             Name = name;

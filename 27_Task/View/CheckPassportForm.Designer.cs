@@ -50,18 +50,20 @@
             // 
             this.passportTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.passportTextBox.Location = new System.Drawing.Point(117, 12);
+            this.passportTextBox.Location = new System.Drawing.Point(78, 12);
             this.passportTextBox.Name = "passportTextBox";
-            this.passportTextBox.Size = new System.Drawing.Size(692, 20);
+            this.passportTextBox.Size = new System.Drawing.Size(731, 20);
             this.passportTextBox.TabIndex = 1;
             // 
             // resultTextBox
             // 
             this.resultTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.resultTextBox.Location = new System.Drawing.Point(117, 87);
+            this.resultTextBox.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.resultTextBox.Location = new System.Drawing.Point(78, 87);
             this.resultTextBox.Name = "resultTextBox";
-            this.resultTextBox.Size = new System.Drawing.Size(773, 20);
+            this.resultTextBox.ReadOnly = true;
+            this.resultTextBox.Size = new System.Drawing.Size(812, 20);
             this.resultTextBox.TabIndex = 2;
             // 
             // label1

@@ -1,58 +1,40 @@
 ﻿using System;
 using System.Windows.Forms;
 using _27_Task.DataAccess;
+using _27_Task.Model;
+using _27_Task.Presenter;
 
 namespace _27_Task
 {
-    public partial class EnterForm : Form
+    public partial class EnterForm : Form, IEnterForm
     {
-        private readonly DbManager _dbManager;
         private readonly CheckPassportForm _checkPassportForm;
+        private readonly EnterPresenter _enterPresenter;
 
-        public EnterForm(DbManager dbManager, CheckPassportForm checkPassportForm)
+        public EnterForm(IDbManager dbManager, CheckPassportForm checkPassportForm)
         {
             InitializeComponent();
-            _dbManager = dbManager ?? throw new ArgumentNullException(nameof(dbManager));
-            _checkPassportForm = checkPassportForm;
-        }
+            
+            _checkPassportForm = checkPassportForm ?? throw new ArgumentNullException(nameof(_checkPassportForm));
 
-        private void enterButton_Click(object sender, EventArgs e)
-        {
-            if (!_dbManager.CheckDbFileExists())
+            if (dbManager is null)
             {
-                var message =
-                    $"Файл базы данных '{DbManager.DatabaseFile}' не найден." + Environment.NewLine +
-                    "Желаете загрузить резервную копию?";
-
-                var dialogResult = MessageBox.Show(
-                    message,
-                    "БД недоступна.",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
-
-                if (dialogResult == DialogResult.Yes)
-                {
-                    _dbManager.CreateDatabase();
-                    _dbManager.FillVotersInfo();
-                }
-                else
-                {
-                    MessageBox.Show("Выход из системы.");
-                    Close();
-                    return;
-                }
+                throw new ArgumentNullException(nameof(dbManager));
             }
-
-            ShowNextForm();
+            
+            _enterPresenter = new EnterPresenter(new EnterService(dbManager), this);
         }
 
-        private void ShowNextForm()
+        private void OnEnterClick(object sender, EventArgs e)
+        {
+            _enterPresenter.Enter();
+        }
+
+        public void ShowNextForm()
         {
             Hide();
             _checkPassportForm.ShowDialog();
             Close();
         }
-
-       
     }
 }

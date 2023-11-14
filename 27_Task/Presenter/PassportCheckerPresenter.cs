@@ -11,7 +11,7 @@ namespace _27_Task.Presenter
         private const string CheckMessageFormat = "По паспорту «{0}» доступ к бюллетеню на дистанционном электронном голосовании {1}";
         private const string Alowed = "ПРЕДОСТАВЛЕН";
         private const string NotAlowed = "НЕ ПРЕДОСТАВЛЕН";
-        
+
         private const string PassportEmpty = "Введите серию и номер паспорта";
         private const string PassportHasInvalidFormat = "Неверный формат серии или номера паспорта";
 
@@ -29,15 +29,14 @@ namespace _27_Task.Presenter
             View.RegisterPresenter(this);
 
             Model.PassportValidated += OnPassportValidated;
-            Model.VoterChecked += OnVoterChecked; ;
+            Model.VoterChecked += OnVoterChecked;
         }
 
         private VoterCheckingService Model { get; }
 
         private ICheckPassportForm View { get; }
 
-
-    public void Check()
+        public void Check()
         {
             Model.Check(View.PassportNumber);
         }
@@ -48,7 +47,7 @@ namespace _27_Task.Presenter
             var passport = e.PassportNumber;
             var message = string.Empty;
 
-            switch (result) 
+            switch (result)
             {
                 case VoterCheckResult.VoterNotFound:
                     message = string.Format(NotFound, passport);
@@ -79,7 +78,7 @@ namespace _27_Task.Presenter
             }
             else
             {
-                throw new InvalidOperationException(result +" not supported.");
+                throw new InvalidOperationException(result + " not supported.");
             }
         }
 
@@ -87,7 +86,7 @@ namespace _27_Task.Presenter
         {
             return string.Format(
                 CheckMessageFormat,
-                passport, 
+                passport,
                 canVote ? Alowed : NotAlowed);
         }
     }

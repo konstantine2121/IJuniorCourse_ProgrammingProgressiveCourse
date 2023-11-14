@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using _27_Task.Model.Dtos;
+using _27_Task.Model.Data;
 
 namespace _27_Task.DataAccess
 {
@@ -9,16 +9,16 @@ namespace _27_Task.DataAccess
 
     public class VotersInfoProvider
     {
-        private readonly DbManager _dbManager;
+        private readonly IDbManager _dbManager;
 
-        public VotersInfoProvider(DbManager dbManager)
+        public VotersInfoProvider(IDbManager dbManager)
         {
             _dbManager = dbManager;
         }
 
-        public List<VoterInfoDto> FindInfo(string passportHash)
+        public List<VoterInfo> FindInfo(string passportHash)
         {
-            var infos = new List<VoterInfoDto>();
+            var infos = new List<VoterInfo>();
 
             var table = _dbManager.FindRecords(passportHash);
             
@@ -35,13 +35,13 @@ namespace _27_Task.DataAccess
             return infos;
         }
 
-        private VoterInfoDto TranslateRecord(DataRow dataRow)
+        private VoterInfo TranslateRecord(DataRow dataRow)
         {
             var name = dataRow.Field<string>(Columns.Name);
             var passportHash = dataRow.Field<string>(Columns.PassportHash);
             var canVote = Convert.ToBoolean(dataRow.Field<long>(Columns.CanVote));
 
-            return new VoterInfoDto(passportHash, name, canVote);
+            return new VoterInfo(passportHash, name, canVote);
         }
     }
 }

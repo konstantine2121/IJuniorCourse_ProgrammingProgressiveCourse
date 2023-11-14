@@ -21,13 +21,6 @@ namespace _27_Task.DataAccess
         }
     }
 
-    public interface IDbManager
-    {
-        bool CheckDbFileExists();
-        void CreateDatabase();
-        void FillVotersInfo();
-    }
-
     public class DbManager : IDbManager
     {
         public const string DatabaseFile = "db.sqlite";
@@ -38,7 +31,7 @@ namespace _27_Task.DataAccess
 
         public DbManager(ILogger logger)
         {
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         #region Data Check / Init

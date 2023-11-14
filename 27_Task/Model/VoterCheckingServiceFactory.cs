@@ -6,7 +6,7 @@ namespace _27_Task.Model
 {
     internal class VoterCheckingServiceFactory
     {
-        public VoterCheckingService Create(DbManager dbManager = null)
+        public VoterCheckingService Create(IDbManager dbManager = null)
         {
             if (dbManager == null)
             {

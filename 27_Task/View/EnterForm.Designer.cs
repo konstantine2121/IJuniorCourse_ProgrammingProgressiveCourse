@@ -39,7 +39,7 @@
             this.enterButton.TabIndex = 0;
             this.enterButton.Text = "Вход в систему.";
             this.enterButton.UseVisualStyleBackColor = true;
-            this.enterButton.Click += new System.EventHandler(this.enterButton_Click);
+            this.enterButton.Click += new System.EventHandler(this.OnEnterClick);
             // 
             // EnterForm
             // 

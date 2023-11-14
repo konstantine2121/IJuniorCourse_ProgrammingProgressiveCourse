@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
-using _27_Task.Common;
-using _27_Task.DataAccess;
 
 namespace _27_Task
 {
-    internal static class Program
+    internal static partial class Program
     {
         /// <summary>
         /// Главная точка входа для приложения.
@@ -15,19 +13,9 @@ namespace _27_Task
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
-            var dbManager = new DbManager(new DummyLogger());
-
-            Application.Run(
-                new EnterForm(
-                    dbManager, 
-                    CreateCheckForm(dbManager)));
+            Application.Run(EnterFormFactory.CreateEnterForm());
         }
 
-        private static CheckPassportForm CreateCheckForm(DbManager dbManager)
-        {
-            return new CheckPassportForm(
-                new VotersInfoProvider(dbManager));
-        }
+
     }
 }
