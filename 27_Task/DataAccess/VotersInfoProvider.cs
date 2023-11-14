@@ -5,6 +5,8 @@ using _27_Task.Model;
 
 namespace _27_Task.DataAccess
 {
+    using Columns = VotersTable.Columns;
+
     public class VotersInfoProvider
     {
         private readonly DbManager _dbManager;
@@ -35,9 +37,9 @@ namespace _27_Task.DataAccess
 
         private VoterInfoDto TranslateRecord(DataRow dataRow)
         {
-            var passportHash = dataRow.Field<string>(VotersTable.Columns.PassportHash);
-            var name = dataRow.Field<string>(VotersTable.Columns.Name);
-            var canVote = Convert.ToBoolean(dataRow.Field<long>(VotersTable.Columns.CanVote));
+            var name = dataRow.Field<string>(Columns.Name);
+            var passportHash = dataRow.Field<string>(Columns.PassportHash);
+            var canVote = Convert.ToBoolean(dataRow.Field<long>(Columns.CanVote));
 
             return new VoterInfoDto(passportHash, name, canVote);
         }

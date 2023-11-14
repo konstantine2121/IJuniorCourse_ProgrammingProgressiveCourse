@@ -38,7 +38,7 @@
             // checkButton
             // 
             this.checkButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.checkButton.Location = new System.Drawing.Point(418, 9);
+            this.checkButton.Location = new System.Drawing.Point(815, 12);
             this.checkButton.Name = "checkButton";
             this.checkButton.Size = new System.Drawing.Size(75, 23);
             this.checkButton.TabIndex = 0;
@@ -52,7 +52,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.passportTextbox.Location = new System.Drawing.Point(117, 12);
             this.passportTextbox.Name = "passportTextbox";
-            this.passportTextbox.Size = new System.Drawing.Size(295, 20);
+            this.passportTextbox.Size = new System.Drawing.Size(692, 20);
             this.passportTextbox.TabIndex = 1;
             // 
             // textResult
@@ -61,7 +61,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textResult.Location = new System.Drawing.Point(117, 87);
             this.textResult.Name = "textResult";
-            this.textResult.Size = new System.Drawing.Size(376, 20);
+            this.textResult.Size = new System.Drawing.Size(773, 20);
             this.textResult.TabIndex = 2;
             // 
             // label1
@@ -86,7 +86,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(505, 166);
+            this.ClientSize = new System.Drawing.Size(902, 166);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textResult);
