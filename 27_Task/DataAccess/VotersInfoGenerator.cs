@@ -4,11 +4,11 @@ using _27_Task.Utils;
 
 namespace _27_Task.DataAccess
 {
-    internal class VotersInfoGenerator
+    public class VotersInfoGenerator
     {
         private HashCalculator _hashCalculator = HashCalculator.CreateSha256Calculator();
 
-        public IEnumerable<VoterInfoDto> Generate() 
+        public IEnumerable<VoterInfoDto> GenerateInfos() 
         {
             yield return new VoterInfoDto(Hash("0000000000"),"И.И.И.", true);
             yield return new VoterInfoDto(Hash("1111111111"),"C.C.C.", true);

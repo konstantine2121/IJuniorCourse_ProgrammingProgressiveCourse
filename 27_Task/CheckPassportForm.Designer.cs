@@ -1,6 +1,6 @@
 ﻿namespace _27_Task
 {
-    partial class Form1
+    partial class CheckPassportForm
     {
         /// <summary>
         /// Обязательная переменная конструктора.
@@ -37,7 +37,8 @@
             // 
             // checkButton
             // 
-            this.checkButton.Location = new System.Drawing.Point(246, 10);
+            this.checkButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkButton.Location = new System.Drawing.Point(815, 12);
             this.checkButton.Name = "checkButton";
             this.checkButton.Size = new System.Drawing.Size(75, 23);
             this.checkButton.TabIndex = 0;
@@ -47,16 +48,20 @@
             // 
             // passportTextbox
             // 
+            this.passportTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.passportTextbox.Location = new System.Drawing.Point(117, 12);
             this.passportTextbox.Name = "passportTextbox";
-            this.passportTextbox.Size = new System.Drawing.Size(123, 20);
+            this.passportTextbox.Size = new System.Drawing.Size(692, 20);
             this.passportTextbox.TabIndex = 1;
             // 
             // textResult
             // 
-            this.textResult.Location = new System.Drawing.Point(117, 55);
+            this.textResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textResult.Location = new System.Drawing.Point(117, 87);
             this.textResult.Name = "textResult";
-            this.textResult.Size = new System.Drawing.Size(204, 20);
+            this.textResult.Size = new System.Drawing.Size(773, 20);
             this.textResult.TabIndex = 2;
             // 
             // label1
@@ -71,24 +76,26 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 58);
+            this.label2.Location = new System.Drawing.Point(13, 90);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(59, 13);
             this.label2.TabIndex = 4;
             this.label2.Text = "Результат";
             // 
-            // Form1
+            // CheckPassportForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(358, 112);
+            this.ClientSize = new System.Drawing.Size(902, 166);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textResult);
             this.Controls.Add(this.passportTextbox);
             this.Controls.Add(this.checkButton);
-            this.Name = "Form1";
-            this.Text = "Проверка на допуск к электронному голосованию";
+            this.MinimizeBox = false;
+            this.Name = "CheckPassportForm";
+            this.ShowIcon = false;
+            this.Text = "Проверка на допуск к голосованию";
             this.ResumeLayout(false);
             this.PerformLayout();
 

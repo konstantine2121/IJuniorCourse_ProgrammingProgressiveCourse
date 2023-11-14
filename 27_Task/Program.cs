@@ -13,14 +13,21 @@ namespace _27_Task
         [STAThread]
         static void Main()
         {
-            DbManager dbManager = new DbManager(new DummyLogger());
-            dbManager.CreateDatabase();
-            dbManager.FillData();
-
-            return;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            var dbManager = new DbManager(new DummyLogger());
+
+            Application.Run(
+                new EnterForm(
+                    dbManager, 
+                    CreateCheckForm(dbManager)));
+        }
+
+        private static CheckPassportForm CreateCheckForm(DbManager dbManager)
+        {
+            return new CheckPassportForm(
+                new VotersInfoProvider(dbManager));
         }
     }
 }
