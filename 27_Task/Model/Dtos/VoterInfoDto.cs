@@ -1,4 +1,4 @@
-﻿namespace _27_Task.Model
+﻿namespace _27_Task.Model.Dtos
 {
     public class VoterInfoDto
     {

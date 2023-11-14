@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using _27_Task.Model;
+using _27_Task.Model.Dtos;
 using _27_Task.Utils;
 
 namespace _27_Task.DataAccess

@@ -83,27 +83,36 @@
     <Compile Include="Common\ILogger.cs" />
     <Compile Include="DataAccess\DbManager.cs" />
     <Compile Include="DataAccess\VotersInfoGenerator.cs" />
-    <Compile Include="EnterForm.cs">
+    <Compile Include="Model\EventArgs\PassportValidationEventArgs.cs" />
+    <Compile Include="Model\Enums\PassportValidation.cs" />
+    <Compile Include="Model\Components\VoterInfoChecker.cs" />
+    <Compile Include="Model\EventArgs\VoterCheckEventArgs.cs" />
+    <Compile Include="Model\Components\PassportValidator.cs" />
+    <Compile Include="Model\Enums\VoterCheckResult.cs" />
+    <Compile Include="Model\VoterCheckingService.cs" />
+    <Compile Include="Model\VoterCheckingServiceFactory.cs" />
+    <Compile Include="Presenter\PassportCheckerPresenter.cs" />
+    <Compile Include="View\EnterForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EnterForm.Designer.cs">
+    <Compile Include="View\EnterForm.Designer.cs">
       <DependentUpon>EnterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="CheckPassportForm.cs">
+    <Compile Include="View\CheckPassportForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CheckPassportForm.Designer.cs">
+    <Compile Include="View\CheckPassportForm.Designer.cs">
       <DependentUpon>CheckPassportForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Model\VoterInfo.cs" />
+    <Compile Include="Model\Dtos\VoterInfoDto.cs" />
     <Compile Include="DataAccess\VotersInfoProvider.cs" />
     <Compile Include="Utils\HashCalculator.cs" />
-    <EmbeddedResource Include="EnterForm.resx">
+    <EmbeddedResource Include="View\EnterForm.resx">
       <DependentUpon>EnterForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CheckPassportForm.resx">
+    <EmbeddedResource Include="View\CheckPassportForm.resx">
       <DependentUpon>CheckPassportForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

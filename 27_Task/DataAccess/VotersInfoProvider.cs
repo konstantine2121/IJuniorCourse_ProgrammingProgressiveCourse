@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using _27_Task.Model;
+using _27_Task.Model.Dtos;
 
 namespace _27_Task.DataAccess
 {
