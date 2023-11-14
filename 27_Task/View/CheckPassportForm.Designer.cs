@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.checkButton = new System.Windows.Forms.Button();
-            this.passportTextbox = new System.Windows.Forms.TextBox();
-            this.textResult = new System.Windows.Forms.TextBox();
+            this.passportTextBox = new System.Windows.Forms.TextBox();
+            this.resultTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -44,25 +44,25 @@
             this.checkButton.TabIndex = 0;
             this.checkButton.Text = "Проверить";
             this.checkButton.UseVisualStyleBackColor = true;
-            this.checkButton.Click += new System.EventHandler(this.checkButton_Click);
+            this.checkButton.Click += new System.EventHandler(this.OnCheckClick);
             // 
-            // passportTextbox
+            // passportTextBox
             // 
-            this.passportTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.passportTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.passportTextbox.Location = new System.Drawing.Point(117, 12);
-            this.passportTextbox.Name = "passportTextbox";
-            this.passportTextbox.Size = new System.Drawing.Size(692, 20);
-            this.passportTextbox.TabIndex = 1;
+            this.passportTextBox.Location = new System.Drawing.Point(117, 12);
+            this.passportTextBox.Name = "passportTextBox";
+            this.passportTextBox.Size = new System.Drawing.Size(692, 20);
+            this.passportTextBox.TabIndex = 1;
             // 
-            // textResult
+            // resultTextBox
             // 
-            this.textResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.resultTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textResult.Location = new System.Drawing.Point(117, 87);
-            this.textResult.Name = "textResult";
-            this.textResult.Size = new System.Drawing.Size(773, 20);
-            this.textResult.TabIndex = 2;
+            this.resultTextBox.Location = new System.Drawing.Point(117, 87);
+            this.resultTextBox.Name = "resultTextBox";
+            this.resultTextBox.Size = new System.Drawing.Size(773, 20);
+            this.resultTextBox.TabIndex = 2;
             // 
             // label1
             // 
@@ -89,8 +89,8 @@
             this.ClientSize = new System.Drawing.Size(902, 166);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.textResult);
-            this.Controls.Add(this.passportTextbox);
+            this.Controls.Add(this.resultTextBox);
+            this.Controls.Add(this.passportTextBox);
             this.Controls.Add(this.checkButton);
             this.MinimizeBox = false;
             this.Name = "CheckPassportForm";
@@ -104,8 +104,8 @@
         #endregion
 
         private System.Windows.Forms.Button checkButton;
-        private System.Windows.Forms.TextBox passportTextbox;
-        private System.Windows.Forms.TextBox textResult;
+        private System.Windows.Forms.TextBox passportTextBox;
+        private System.Windows.Forms.TextBox resultTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
     }

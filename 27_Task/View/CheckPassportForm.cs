@@ -1,88 +1,74 @@
 ﻿using System;
 using System.Windows.Forms;
 using _27_Task.DataAccess;
-using _27_Task.Utils;
+using _27_Task.Presenter;
 
 namespace _27_Task
 {
-    public partial class CheckPassportForm : Form
+    public partial class CheckPassportForm : Form, ICheckPassportForm
     {
-        private const string CheckMessageFormat = "\"По паспорту «\"{0}\"» доступ к бюллетеню на дистанционном электронном голосовании {1}";
-        private const string Alowed = "ПРЕДОСТАВЛЕН";
-        private const string NotAlowed = "НЕ ПРЕДОСТАВЛЕН";
+        private const string TipCaption = "Ошибка ввода";
+        private const int TipDuration = 5;
 
-        private const int DigitsInPassport = 10;
-        private readonly VotersInfoProvider _votersInfoProvider;
-        private readonly HashCalculator _hashCalculator = HashCalculator.CreateSha256Calculator();
+        #region Fields
 
+        private PassportCheckerPresenter _presenter;
+        private ToolTip _toolTip;
+
+        #endregion Fields
+
+        #region Ctor
+        
         public CheckPassportForm(VotersInfoProvider votersInfoProvider)
         {
             InitializeComponent();
-            _votersInfoProvider = votersInfoProvider ?? throw new ArgumentNullException(nameof(votersInfoProvider));
+
+            _toolTip = new ToolTip();
+            _toolTip.SetToolTip(passportTextBox, TipCaption);
+            passportTextBox.TextChanged += OnTextChanged;
         }
 
-        private string PassportTextValue => passportTextbox.Text.Trim();
+        #endregion Ctor
 
-        private void checkButton_Click(object sender, EventArgs e)
+        #region ICheckPassportForm Implementation
+
+        public string PassportNumber => passportTextBox.Text;
+
+        public string VoterCheckResult 
+        { 
+            get => resultTextBox.Text; 
+            set => resultTextBox.Text = value; 
+        }
+
+        public void RegisterPresenter(PassportCheckerPresenter presenter)
         {
-            if (CheckPassportInput(out var passport))
-            {
-                var hash = _hashCalculator.CalculateHash(passport);
-                var records = _votersInfoProvider.FindInfo(hash);
-
-                if (records.Count < 1)
-                {
-                    PrintNotFound();
-                }
-                else
-                {
-                    PrintAlowed(records[0].CanVote);
-                }
-            }
+            _presenter = presenter ?? throw new ArgumentNullException(nameof(presenter));
         }
 
-        private void PrintNotFound()
+        public void ShowInputTip(string message)
         {
-            textResult.Text = "Паспорт «" + passportTextbox.Text + "» в списке участников дистанционного голосования НЕ НАЙДЕН";
+            _toolTip.Show(message, this, TipDuration);
         }
 
-        private void PrintAlowed(bool canVote)
+        #endregion ICheckPassportForm Implementation
+
+        private void HideTip()
         {
-            textResult.Text = string.Format(
-                CheckMessageFormat, 
-                passportTextbox.Text, 
-                canVote ? Alowed : NotAlowed);
+            _toolTip.Hide(this);
         }
 
-        #region Input Validation
-
-        private bool CheckPassportInput(out string passport)
+        #region Event Handlers
+        
+        private void OnCheckClick(object sender, EventArgs e)
         {
-            passport = PassportTextValue;
-
-            if (passport == string.Empty)
-            {
-                MessageBox.Show("Введите серию и номер паспорта");
-                return false;
-            }
-
-            passport = passport.Replace(" ", string.Empty);
-
-            if (!Validate(passport))
-            {
-                textResult.Text = "Неверный формат серии или номера паспорта";
-                return false;
-            }
-
-            return true;
+            _presenter?.Check();
         }
 
-        private bool Validate(string value)
+        private void OnTextChanged(object sender, EventArgs e)
         {
-            return !string.IsNullOrWhiteSpace(value) && 
-                value.Length >= DigitsInPassport ;
+            HideTip();
         }
 
-        #endregion Input Validation
+        #endregion Event Handlers
     }
 }

@@ -2,7 +2,7 @@
 
 namespace _27_Task.Model.Components
 {
-    internal static class PassportValidator
+    public static class PassportValidator
     {
         private const int DigitsInPassport = 10;
 

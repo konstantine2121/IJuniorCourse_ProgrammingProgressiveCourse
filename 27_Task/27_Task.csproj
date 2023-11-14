@@ -109,6 +109,7 @@
     <Compile Include="Model\Dtos\VoterInfoDto.cs" />
     <Compile Include="DataAccess\VotersInfoProvider.cs" />
     <Compile Include="Utils\HashCalculator.cs" />
+    <Compile Include="View\ICheckPassportForm.cs" />
     <EmbeddedResource Include="View\EnterForm.resx">
       <DependentUpon>EnterForm.cs</DependentUpon>
     </EmbeddedResource>

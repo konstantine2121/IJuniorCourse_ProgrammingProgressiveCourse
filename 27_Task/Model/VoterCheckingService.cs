@@ -5,7 +5,7 @@ using _27_Task.Model.Enums;
 
 namespace _27_Task.Model
 {
-    internal class VoterCheckingService
+    public class VoterCheckingService
     {
         private VoterInfoChecker _voterChecker;
 

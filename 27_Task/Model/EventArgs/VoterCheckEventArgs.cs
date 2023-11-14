@@ -2,7 +2,7 @@
 
 namespace _27_Task.Model.EventArgs
 {
-    internal class VoterCheckEventArgs : System.EventArgs
+    public class VoterCheckEventArgs : System.EventArgs
     {
         public VoterCheckEventArgs(VoterCheckResult checkResult, string passportNumber)
         {

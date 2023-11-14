@@ -5,7 +5,7 @@ using _27_Task.Utils;
 
 namespace _27_Task.Model.Components
 {
-    internal class VoterInfoChecker
+    public class VoterInfoChecker
     {
         private readonly HashCalculator _hashCalculator = HashCalculator.CreateSha256Calculator();
         private VotersInfoProvider _votersInfoProvider;
