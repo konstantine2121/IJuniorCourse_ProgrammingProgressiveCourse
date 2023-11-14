@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.SQLite;
 using System.IO;
 using _27_Task.Common;
@@ -20,9 +21,15 @@ namespace _27_Task.DataAccess
         }
     }
 
-    internal class DbManager
+    public interface IDbManager
     {
+        bool CheckDbFileExists();
+        void CreateDatabase();
+        void FillVotersInfo();
+    }
 
+    public class DbManager : IDbManager
+    {
         public const string DatabaseFile = "db.sqlite";
         private const string ConnectionString = "Data Source=" + DatabaseFile;
 
@@ -33,6 +40,8 @@ namespace _27_Task.DataAccess
         {
             _logger = logger;
         }
+
+        #region Data Check / Init
 
         public bool CheckDbFileExists()
         {
@@ -79,10 +88,8 @@ namespace _27_Task.DataAccess
             }
         }
 
-        public void FillData()
+        public void FillVotersInfo()
         {
-            var table = VotersTable.TableName;
-
             try
             {
                 using (var connection = CreateConnection())
@@ -96,7 +103,7 @@ namespace _27_Task.DataAccess
                     var insert = $"INSERT INTO {VotersTable.TableName} ({Columns.Name}, {Columns.PassportHash}, {Columns.CanVote}) " +
                         $"VALUES ({name}, {passport}, {vote})";
 
-                    var records = _votersInfoGenerator.Generate();
+                    var records = _votersInfoGenerator.GenerateInfos();
 
                     foreach (var record in records)
                     {
@@ -115,6 +122,47 @@ namespace _27_Task.DataAccess
             {
                 LogException(ex);
             }
+        }
+
+        #endregion Data Check / Init
+
+        public DataTable FindRecords(string passportHash)
+        {
+            if (passportHash == null)
+            {
+                throw new ArgumentNullException(nameof(passportHash));
+            }
+
+            DataTable result = new DataTable();
+
+            try
+            {
+                using (var connection = CreateConnection())
+                {
+                    connection.Open();
+
+                    var passport = "@passport";
+                    var select =
+                        $"SELECT * FROM {VotersTable.TableName} " +
+                        $"WHERE {Columns.PassportHash}={passport} " +
+                        "LIMIT 1;";
+
+                    using (var command = CreateCommand(connection))
+                    {
+                        command.CommandText = select;
+                        command.Parameters.Add(new SQLiteParameter(passport, passportHash));
+
+                        SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter(command);
+                        dataAdapter.Fill(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogException(ex);
+            }
+
+            return result;
         }
 
         #region Create Connections / Commands
