@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "20_Task", "20_Task\20_Task.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "27_Task", "27_Task\27_Task.csproj", "{6D5C9A94-C843-474A-BAF5-BCDA09B93C85}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReplacingConditionalLogicWithPolymorphism_Task", "ReplacingConditionalLogicWithPolymorphism_Task\ReplacingConditionalLogicWithPolymorphism_Task.csproj", "{65F9497A-3C3C-409D-A0D6-421C126FE8F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{6D5C9A94-C843-474A-BAF5-BCDA09B93C85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D5C9A94-C843-474A-BAF5-BCDA09B93C85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D5C9A94-C843-474A-BAF5-BCDA09B93C85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65F9497A-3C3C-409D-A0D6-421C126FE8F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65F9497A-3C3C-409D-A0D6-421C126FE8F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65F9497A-3C3C-409D-A0D6-421C126FE8F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65F9497A-3C3C-409D-A0D6-421C126FE8F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
