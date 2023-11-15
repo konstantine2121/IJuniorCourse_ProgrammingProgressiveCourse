@@ -16,7 +16,6 @@ namespace _27_Task
                 var checkerService = new VoterCheckingServiceFactory().Create(dbManager);
                 var checkForm = new CheckPassportForm();
                 var presenter = new PassportCheckerPresenter(checkerService, checkForm);
-                checkForm.RegisterPresenter(presenter);
 
                 return new EnterForm(dbManager, checkForm);
             }

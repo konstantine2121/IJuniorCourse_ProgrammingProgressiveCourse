@@ -7,12 +7,10 @@ namespace _27_Task
     public partial class CheckPassportForm : Form, ICheckPassportForm
     {
         private const string TipCaption = "Ошибка ввода";
-        private const int TipDuration = 5;
-
+        
         #region Fields
 
         private PassportCheckerPresenter _presenter;
-        private ToolTip _toolTip;
 
         #endregion Fields
 
@@ -21,10 +19,6 @@ namespace _27_Task
         public CheckPassportForm()
         {
             InitializeComponent();
-
-            _toolTip = new ToolTip();
-            _toolTip.SetToolTip(passportTextBox, TipCaption);
-            passportTextBox.TextChanged += OnTextChanged;
         }
 
         #endregion Ctor
@@ -46,26 +40,16 @@ namespace _27_Task
 
         public void ShowInputTip(string message)
         {
-            _toolTip.Show(message, this, TipDuration);
+            MessageBox.Show(message, TipCaption);
         }
 
         #endregion ICheckPassportForm Implementation
-
-        private void HideTip()
-        {
-            _toolTip.Hide(this);
-        }
 
         #region Event Handlers
 
         private void OnCheckClick(object sender, EventArgs e)
         {
             _presenter?.Check();
-        }
-
-        private void OnTextChanged(object sender, EventArgs e)
-        {
-            HideTip();
         }
 
         #endregion Event Handlers
