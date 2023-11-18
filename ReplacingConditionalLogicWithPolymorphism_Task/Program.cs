@@ -30,7 +30,7 @@ namespace ReplacingConditionalLogicWithPolymorphism_Task
             var orderForm = new OrderForm(paymentSystems);
             var paymentHandler = new PaymentHandler();
 
-            var paymentSystemName = orderForm.SelectPaymentSystemOrDie();
+            string paymentSystemName = orderForm.SelectPaymentSystemOrDie();
 
             Print($"Использование API {paymentSystemName}");
 
@@ -145,7 +145,7 @@ namespace ReplacingConditionalLogicWithPolymorphism_Task
 
                 var type = paymentSystems[className];
                 var hasConstructorWithoutArsuments = type.GetConstructors()
-                    .Any(c => c.GetParameters().Length == 0);
+                    .Any(constructorInfo => constructorInfo.GetParameters().Length == 0);
 
                 if (!hasConstructorWithoutArsuments)
                 {
@@ -164,10 +164,10 @@ namespace ReplacingConditionalLogicWithPolymorphism_Task
             {
                 try
                 {
-                    paymentSystem = create();
+                    paymentSystem = create.Invoke();
                     return true;
                 }
-                catch (Exception ex)
+                catch
                 {
                     //TODO: logging
                     return false;
