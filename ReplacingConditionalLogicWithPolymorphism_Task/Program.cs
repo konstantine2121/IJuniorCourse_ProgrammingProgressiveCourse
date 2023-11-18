@@ -1,31 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace ReplacingConditionalLogicWithPolymorphism_Task
 {
-    public class Printer
+    using static Printer;
+
+    public static class Printer
     {
-        protected static void Print(string message)
+        public static void Print(string message)
         {
             Console.WriteLine(message);
         }
     }
 
-    internal class Program : Printer
+    internal class Program
     {
         static void Main(string[] args)
         {
-            var paymentSystemsProvider = new SupportPaymentSystemsProviderFactory().Create();
-            var orderForm = new OrderForm(paymentSystemsProvider);
+            var paymentSystems = new List<string>()
+            {
+                "QIWI",
+                "WebMoney",
+                "Card"
+            };
+
+            var paymentSystemsFactory = new PaymentSystemFactory(paymentSystems);
+            var orderForm = new OrderForm(paymentSystems);
             var paymentHandler = new PaymentHandler();
 
-            var paymentSystem = orderForm.SelectPaymentSystemOrDie();
+            var paymentSystemName = orderForm.SelectPaymentSystemOrDie();
 
-            Print($"Использование API {paymentSystem.Name}");
+            Print($"Использование API {paymentSystemName}");
 
-            paymentHandler.ShowPaymentResult(paymentSystem);
-            
+            if (paymentSystemsFactory.TryCreate(paymentSystemName, out var paymentSystem))
+            {
+                paymentHandler.ShowPaymentResult(paymentSystem);
+            }
+            else
+            {
+                Print($"Платежная система {paymentSystemName} сейчас не доступна");
+            }
+
             Exit();
         }
 
@@ -38,28 +55,26 @@ namespace ReplacingConditionalLogicWithPolymorphism_Task
 
     }
 
-    public class OrderForm : Printer
+    public class OrderForm
     {
-        private readonly SupportedPaymentSystemsProvider _paymentSystemsProvider;
+        private readonly IEnumerable<string> _paymentSystems;
 
-        public OrderForm(SupportedPaymentSystemsProvider paymentSystemsProvider)
+        public OrderForm(IEnumerable<string> paymentSystems)
         {
-            _paymentSystemsProvider = paymentSystemsProvider ??
-                throw new ArgumentNullException(nameof(paymentSystemsProvider));
+            _paymentSystems = paymentSystems ??
+                throw new ArgumentNullException(nameof(paymentSystems));
         }
 
-        public PaymentSystem SelectPaymentSystemOrDie()
+        public string SelectPaymentSystemOrDie()
         {
-            var paymentSystems  = _paymentSystemsProvider.PaymentSystems;
-            var names = paymentSystems.Values.Select(system => system.Name);
-            var namesString = string.Join(", ", names);
+            var namesString = string.Join(", ", _paymentSystems);
 
             Print($"Мы принимаем: {namesString}");
             Print("Введите имя системы оплаты :");
 
-            var selectionInput = Console.ReadLine();
+            var selectionInput = Console.ReadLine().ToLower();
 
-            if (!paymentSystems.TryGetValue(selectionInput.ToLower(), out var paymentSystem))
+            if (!_paymentSystems.Contains(selectionInput, StringComparer.OrdinalIgnoreCase))
             {
                 Print("\nВы неверно указали платежную систему.");
                 Print("Похоже, вы недостойны быть нашим покупателем.");
@@ -69,11 +84,11 @@ namespace ReplacingConditionalLogicWithPolymorphism_Task
                 Program.Exit();
             }
 
-            return paymentSystem;
+            return selectionInput;
         }
     }
 
-    public class PaymentHandler : Printer
+    public class PaymentHandler
     {
         public void ShowPaymentResult(PaymentSystem paymentSystem)
         {
@@ -107,36 +122,69 @@ namespace ReplacingConditionalLogicWithPolymorphism_Task
         public override string Name => "Card";
     }
 
-    public class SupportedPaymentSystemsProvider
-    {
-        private readonly Dictionary<string, PaymentSystem> _paymentSystems = new Dictionary<string, PaymentSystem>();
 
-        public SupportedPaymentSystemsProvider(params PaymentSystem[] paymentSystems)
+
+    public class PaymentSystemFactory
+    {
+        private readonly Dictionary<string, Func<PaymentSystem>> _creators = new Dictionary<string, Func<PaymentSystem>>();
+
+        public PaymentSystemFactory(IEnumerable<string> supportedSystemIds)
         {
-            if (paymentSystems is null)
+            if (supportedSystemIds == null)
             {
-                throw new ArgumentNullException(nameof(paymentSystems));
+                throw new ArgumentNullException(nameof(supportedSystemIds));
             }
 
-            foreach (var paymentSystem in paymentSystems)
+            var paymentSystems = GetExistingPaymantsSystemsMap();
+
+            foreach (var systemId in supportedSystemIds)
             {
-                if (paymentSystem is null)
+                var className = systemId.ToLower();
+
+                if (!paymentSystems.ContainsKey(className))
                 {
-                    throw new NullReferenceException($"{nameof(paymentSystems)} can't cointains null values");
+                    throw new InvalidOperationException("Данной системы нет в списке поддерживаемых платежных систем");
                 }
 
-                _paymentSystems[paymentSystem.Name.ToLower()] = paymentSystem;
+                var type = paymentSystems[className];
+                var hasConstructorWithoutArsuments = type.GetConstructors()
+                    .Any(c => c.GetParameters().Length == 0);
+
+                if (!hasConstructorWithoutArsuments)
+                {
+                    throw new InvalidOperationException("Данная платежная система не содержит конструкторов по умолчанию.");
+                }
+
+                _creators.Add(className, () => (PaymentSystem)Activator.CreateInstance(paymentSystems[className]));
             }
         }
 
-        public IReadOnlyDictionary<string, PaymentSystem> PaymentSystems => _paymentSystems;
-    }
-
-    public class SupportPaymentSystemsProviderFactory
-    {
-        public SupportedPaymentSystemsProvider Create()
+        public bool TryCreate(string systemId, out PaymentSystem paymentSystem)
         {
-            return new SupportedPaymentSystemsProvider(new Qiwi(), new WebMoney(), new Card());
+            paymentSystem = null;
+
+            if (_creators.TryGetValue(systemId.ToLower(), out var create))
+            {
+                try
+                {
+                    paymentSystem = create();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    //TODO: logging
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        private static Dictionary<string, Type> GetExistingPaymantsSystemsMap()
+        {
+            return Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .Where(type => type.IsSubclassOf(typeof(PaymentSystem)))
+                .ToDictionary(type => type.Name.ToLower(), type => type);
         }
     }
 
