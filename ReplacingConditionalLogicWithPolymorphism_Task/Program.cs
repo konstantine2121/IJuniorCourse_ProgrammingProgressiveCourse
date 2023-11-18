@@ -52,7 +52,6 @@ namespace ReplacingConditionalLogicWithPolymorphism_Task
             Console.ReadKey();
             Environment.Exit(0);
         }
-
     }
 
     public class OrderForm
@@ -121,8 +120,6 @@ namespace ReplacingConditionalLogicWithPolymorphism_Task
     {
         public override string Name => "Card";
     }
-
-
 
     public class PaymentSystemFactory
     {
